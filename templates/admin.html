@@ -1,0 +1,131 @@
+<!-- Admin -->
+
+{% extends "base.html"%}
+{% block content %}
+<div class="jumbotron">
+  <h1>Wilkommen Admin!</h1>
+  <input type="date" placeholder="TT/MM/YYYY" value="{{ date }}" name="Datum" id="date" onchange="change_date()">
+  <p>{{ weather }}</p>
+</div>
+
+<div class="container" style="max-width: 1400px;">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Abrechnung</h2>
+      <p>Hier eine Übersicht der Einnahmen</p>
+      <table class="table table-striped" style="max-width: 800px; font-size: 20px;">
+        <tr>
+          <td style="width:50%"><p>Kasse Grundstock</p></td>
+          <td><input type="number" placeholder="{{ base_cash }}" onkeydown="search(this)" id="base_cash" style="min-width: 50px;"></td>
+        </tr>
+        <tr>
+          <td style="width:50%"><p>Einnahmen Bar</p></td>
+          <td><p>CHF {{ revenue[0] }}</p></td>
+        </tr>
+        <tr>
+          <td style="width:50%"><p>Kasseninhalt</p></td>
+          <td><p>CHF {{ cash_now }}</p></td>
+        </tr>
+      </table>
+
+      <table class="table table-striped" style="max-width: 800px; font-size: 20px;">
+        <tr>
+          <td style="width:50%"><p>Einnahmen Karte</p></td>
+          <td><p>CHF {{ revenue[1] }}</p></td>
+        </tr>
+        <tr>
+          <td style="width:50%"><p>Einnahmen TWINT</p></td>
+          <td><p>CHF {{ revenue[2] }}</p></td>
+        </tr>
+        <tr>
+          <td style="width:50%"><p>Kosten Helfer</p></td>
+          <td><p>CHF {{ revenue[3] }}</p></td>
+        </tr>
+      </table>
+
+      <table class="table table-striped" style="max-width: 800px; font-size: 20px;">
+        <tr>
+          <td style="width:50%"><p>Tageseinnahmen</p></td>
+          <td><p>CHF {{ revenue[0] + revenue[1] + revenue[2] }}</p></td>
+        </tr>
+      </table>
+
+      <table class="table table-striped" style="max-width: 800px; font-size: 20px;">
+        <tr>
+          <td style="width:50%"><p>Einnahmen Hundegudi</p></td>
+          <td><p>CHF {{ sales[1] }}</p></td>
+        </tr>
+        <tr>
+          <td style="width:50%"><p>Einnahmen Hundespielzeug</p></td>
+          <td><p>CHF {{ sales[0] }}</p></td>
+        </tr>
+      </table>
+    </div>
+
+
+    <div class="col-md-6">
+      <h2>Verkäufe</h2>
+      <p>So viel wurde heute verkauft</p>
+      <table class="table table-striped">
+          <thead>
+          <tr>
+              <th style="width:50%">Produkt</th>
+              <th style="width:50%">Anzahl</th>
+          </tr>
+          </thead>
+          <tbody>
+              {% for prod in product_sales %}
+              <tr>
+                  <td><p>{{ prod }}</p></td>
+                  <td><p>{{ product_sales[prod] }}</p></td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>  
+  </div>
+</div>
+
+
+<a href="{{ url_for('download', filename='abrechnung') }}" download>
+  <p>Abrechnung Download</p>
+</a>
+<!--
+<form method="get" action="{{ url_for('download', filename='abrechnung') }}">
+  <button class="btn" type="submit">Abrechnung Download</button>
+</form>
+-->
+<script>
+  function search(ele) {
+    if(event.key === 'Enter') {
+      if(ele.id == 'base_cash') {
+        change_base_cash();
+      }        
+    }
+  }
+
+  function change_base_cash() {
+    let base_cash = document.getElementById('base_cash').value;
+    const URL = '/abrechnung'
+    const xhr = new XMLHttpRequest();
+    let data = JSON.stringify({ "base_cash": base_cash });
+    xhr.open('POST', URL);
+    xhr.send(data);
+    location.reload();
+  }
+
+  function change_date() {
+    let date = document.getElementById('date').value;
+    const URL = '/abrechnung'
+    const xhr = new XMLHttpRequest();
+    let data = JSON.stringify({ "date": date });
+    xhr.open('POST', URL);
+    xhr.send(data);
+    location.reload();
+  }
+</script>
+
+<!-- ToDo: csv file hochladen-->
+
+
+{% endblock %}

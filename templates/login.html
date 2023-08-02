@@ -1,0 +1,16 @@
+<!-- Erfassung der Anmeldeinformationen -->
+
+{% extends "base.html"%}
+{% block content %}
+<div class="jumbotron">
+    <h1>Anmelden für Admin Funktionen</h1>
+    <p></p>
+    <form action="#" method="POST">
+       <label for="name">Name</label>
+        <input type="text" name="name">
+        <label for="password">Passwort</label>
+        <input type="password" name="password">
+        <input type="submit" value="Anmelden">
+    </form>
+</div>
+{% endblock %}

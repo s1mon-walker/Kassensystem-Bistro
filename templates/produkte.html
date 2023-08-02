@@ -1,0 +1,92 @@
+<!-- Darstellung und Edit aller Produkte -->
+
+{% extends "base.html"%}
+{% block content %}
+
+<div class="container">
+    <h2>Alle Produkte</h2>
+    <p>Hier werden alle Produkte angezeigt</p>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th style="width:20%">ID</th>
+            <th style="width:20%">Name</th>
+            <th style="width:20%">Preis</th>
+            <th style="width:20%">Farbe</th>
+            <th style="width:20%">Anordnung</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td><div class="row"><div class="col">{{ product[0] }}</div><div class="col"><button type="button" class="btn btn-primary" style="background-color: #0A2240;" id="{{ product[0] }}_delete" onclick="button_click(id)">Löschen</button></div></div></td>
+                <td><input type="text" value="{{ product[1] }}" onkeydown="search(this.id)" id="{{ product[0] }}_name" style="min-width: 50px;"></td>
+                <td><input type="number" value="{{ product[2] }}" onkeydown="search(this.id)" id="{{ product[0] }}_price" style="min-width: 50px;"></td>
+                <td><input type="color" value="{{ product[3] }}" name="color" onchange="update_field(this.id)" id="{{ product[0] }}_color"></td>
+                <td><input type="text" value="{{ product[4] }}" onkeydown="search(this.id)" id="{{ product[0] }}_active" style="min-width: 50px;"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th style="width:20%"></th>
+            <th style="width:20%">Name</th>
+            <th style="width:20%">Preis</th>
+            <th style="width:20%">Farbe</th>
+            <th style="width:20%">Anordnung</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><button type="button" class="btn btn-primary" style="background-color: #0A2240;" id="new_product_confirm" onclick="add_product()">Produkt hinzufügen</button></td>
+                <td><input type="text" placeholder="Name" id="new_name" style="min-width: 50px;"></td>
+                <td><input type="number" placeholder="0.0" id="new_price" style="min-width: 50px;"></td>
+                <td><input type="color" name="color" id="new_color"></td>
+                <td>1</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function search(ele) {
+        if(event.key === 'Enter') {
+            update_field(ele);     
+        }
+    }
+
+    function button_click(id) {
+        const URL = '/produkte'
+        const xhr = new XMLHttpRequest();
+        let data = JSON.stringify([id]);
+        xhr.open('POST', URL);
+        xhr.send(data);
+        location.reload();
+    }
+
+    function update_field(ele) {
+        let value = document.getElementById(ele).value;
+        const URL = '/produkte'
+        const xhr = new XMLHttpRequest();
+        let data = JSON.stringify([ele, value]);
+        xhr.open('POST', URL);
+        xhr.send(data);
+        location.reload();
+    }
+
+    function add_product() {
+        let name = document.getElementById("new_name").value;
+        let price = document.getElementById("new_price").value;
+        let cathegory = document.getElementById("new_cathegory").value;
+        const URL = '/produkte'
+        const xhr = new XMLHttpRequest();
+        let data = JSON.stringify([name, price, cathegory, 1]);
+        xhr.open('POST', URL);
+        xhr.send(data);
+        location.reload();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+<!-- Statistik -->
+
+{% extends "base.html"%}
+{% block content %}
+<div class="jumbotron">
+  <h1>Wilkommen Admin!</h1>
+  <input type="date" placeholder="TT/MM/YYYY" value="{{ date }}" name="Datum" id="date" onchange="change_date()">
+</div>
+
+<canvas id="myChart" width="400" height="400"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+
+
+<script>
+  const python_data = [{x: '06:00:00', y: 1}, {x: '06:15:00', y: 2}, {x: '06:30:00', y: 8}]; //{{ python_data|safe }};
+  const labels = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+  console.log(python_data[0].x);
+
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'Dataset1',
+      data: python_data,
+      backgroundColor: '#00FF00',
+    }]
+  }
+
+  var myChartObject = document.getElementById('myChart');
+  var chart = new Chart(myChartObject, {
+      type: 'bar',
+      data: data,
+      options: {
+        responsive: true,
+        plugins: {
+          legend: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Titel'
+        }
+      }
+  });
+
+  function change_date() {
+    let date = document.getElementById('date').value;
+    const URL = '/statistik'
+    const xhr = new XMLHttpRequest();
+    let data = JSON.stringify({ "date": date });
+    xhr.open('POST', URL);
+    xhr.send(data);
+    location.reload();
+  }
+</script>
+
+
+{% endblock %}

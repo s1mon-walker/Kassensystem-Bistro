@@ -1,0 +1,14 @@
+Abrechnung Hundehalter Bistro 2022-10-20
+Kasse Grundstock: CHF 100.0
+Einnahmen Bar: CHF 3.5
+Kasseninhalt: CHF 103.5
+Einnahmen Karte: CHF 5.0
+Einnahmen TWINT: CHF 5.0
+Einnahmen Helfer: CHF 1.5
+Tageseinnahmen: CHF 13.5
+
+Bestellungen:
+[47, '2022-10-20 19:38:24', 'Helfer', '1 Rakete<br>']
+[46, '2022-10-20 19:38:21', 'TWINT', '1 Most<br>']
+[45, '2022-10-20 19:38:16', 'Karte', '1 Bier<br>']
+[44, '2022-10-20 19:36:30', 'Bar', '1 Softdrink<br>']

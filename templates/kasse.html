@@ -1,0 +1,160 @@
+<!-- /kasse -->
+
+{% extends "base.html"%}
+{% block content %}
+
+<div class="container" style="max-width: 1200px;">
+  <h1 style="margin-top: 20px;">Kasse Hundehalter Bistro</h1>
+  <div class="row">
+    <div class="col-md-8">
+      
+      <div class="row row-cols-3">
+          {% for product in products %}
+          <div class="col-4"><button type="button" class="btn btn-primary btn-block" style="font-size : 20px; margin-top: 10px; background-color: {{ colors[product] }};" id="{{ product }}" onclick="button_click(id)">{{ product }}<br>CHF {{ products[product] }}</button></div>
+          {% endfor %}
+      </div>
+      
+    </div>
+    <div class="col-md-4">
+      <h2>Bestellung</h2>
+      <table class="table" id="order"></table>
+      <h3 id="total" style="font-size : 24px;">Total CHF</h3>
+      <button type="button" class="btn btn-success btn-block p-4" style="font-size : 32px;" onclick="open_popup('popup-pay')">Bezahlen</button>
+      <button type="button" class="btn btn-danger btn-block p-4" style="font-size : 32px;" onclick="reset_order()">Stornieren</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" id="popup-pay">
+  <h1 style="text-align: center;">Bestellung</h2>
+  <table class="table" id="order-popup">Items</table>
+  <h3 id="total-popup">Total CHF</h3>
+  <div class="container">
+    <div class="row row-cols-2">
+      <div class="col-6"><button type="button" class="btn btn-success btn-block p-2" style="font-size : 32px; margin-top: 20px;" onclick="accept_order(0)">Bar</button></div>
+      <div class="col-6"><button type="button" class="btn btn-success btn-block p-2" style="font-size : 32px; margin-top: 20px;" onclick="accept_order(1)">Karte</button></div>
+      <div class="col-6"><button type="button" class="btn btn-success btn-block p-2" style="font-size : 32px; margin-top: 20px;" onclick="accept_order(2)">TWINT</button></div>
+      <div class="col-6"><button type="button" class="btn btn-success btn-block p-2" style="font-size : 32px; margin-top: 20px;" onclick="accept_order(3)">Helfer</button></div>
+      <div class="col-12"><button type="button" class="btn btn-danger btn-block p-2" style="font-size : 32px; margin-top: 20px;" onclick="close_popup('popup-pay')">Korrektur</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="popup" id="popup-price">
+  <h1 style="text-align: center;">Preis eingeben</h2>
+  <input type="number" placeholder="0" id="price">
+  <div class="container">
+    <div class="row row-cols-2">
+      <div class="col-12"><button type="button" class="btn btn-success btn-block p-2" style="font-size : 32px; margin-top: 20px;" onclick="accept_price()">OK</button></div>
+      <div class="col-12"><button type="button" class="btn btn-danger btn-block p-2" style="font-size : 32px; margin-top: 20px;" onclick="close_popup('popup-price')">Abbrechen</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+    var prods = {{ products|tojson }};
+    var order = {};
+    var total = 0;
+    var item_without_price = '';
+
+    function calc_total (order) {
+        total = 0;
+        for (let key in order) {
+          if (key in prods) {
+            total += order[key] * prods[key];
+          } else {
+            total += order[key] * resolve_price(key);
+          }
+        }
+    }
+
+    function button_click(id) {
+        console.log(id)
+        console.log(prods[id])
+
+        if (prods[id] === 0) {
+          item_without_price = id;
+          open_popup('popup-price');
+        } else {
+          add_item(id);
+        }
+        
+        update_ui();
+    }
+
+    function update_ui() {
+      calc_total(order);
+      let order_str = order_to_str(order);
+      document.getElementById('order').innerHTML = order_str;
+      document.getElementById('order-popup').innerHTML = order_str;
+      document.getElementById('total').innerHTML = 'Total CHF ' + total.toString();
+      document.getElementById('total-popup').innerHTML = 'Total CHF ' + total.toString();
+    }
+
+    function add_item(id) {
+      if (id in order) {
+        order[id] += 1;
+      } else {
+        order[id] = 1;
+      }
+      console.log(order)
+    }
+
+    function order_to_str(order) {
+      str = new String()
+      for (let key in order) {
+        if (key in prods) {
+          str += '<tr><td>' + order[key].toString() + '</td><td>' + key + '</td><td>CHF ' + prods[key] + '</td></tr>';
+        } else {
+          str += '<tr><td>' + order[key].toString() + '</td><td>' + key + '</td><td>CHF ' + resolve_price(key) + '</td></tr>';
+        }
+      }
+      return str
+    }
+
+    function open_popup(id) {
+      let popup = document.getElementById(id);
+      popup.classList.add('open-popup');
+    }
+
+    function close_popup(id) {
+      let popup = document.getElementById(id);
+      popup.classList.remove('open-popup');
+    }
+
+    function accept_price() {
+      close_popup('popup-price');
+      let price = document.getElementById('price').value;
+      let name = item_without_price + '(' + price + ')';
+      add_item(name);
+      update_ui();
+    }
+
+    function resolve_price(key) {
+      let start = key.indexOf('(') + 1;
+      let end = key.indexOf(')');
+      let price = key.slice(start, end);
+      return parseFloat(price)
+    }
+
+    function accept_order(payment_method) {
+        console.log('accept order')
+        const URL = '/kasse'
+        const xhr = new XMLHttpRequest();
+        let data = JSON.stringify({ "order_id": {{ order_id }}, "order": order, "payment_method": payment_method});
+        xhr.open('POST', URL);
+        xhr.send(data);
+        location.reload();
+    }
+
+    function reset_order() {
+        console.log('reset order');
+        order = [];
+        total = 0;
+
+        document.getElementById('order').innerHTML = order;
+        document.getElementById('order-popup').innerHTML = order;
+        document.getElementById('total').innerHTML = 'Total CHF ' + total.toString();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+<!-- Basistemplate mit der Verlinkung von BOOTSTRAP -->
+<!-- Hundehalter Farbe: #0A2240 -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hundehalter Bistro</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="{{url_for('index')}}">
+        <img src="../static/huha_logo_full.svg" alt="../static/huha_logo.png" height="45">
+      </a>
+      <a class="navbar-brand" href="{{url_for('index')}}">Home</a>
+      <a class="navbar-brand" href="{{url_for('kasse')}}">Kasse</a>
+      <a class="navbar-brand" href="{{url_for('kueche')}}">Küche</a>
+      <a class="navbar-brand" href="{{url_for('bestellungen')}}">Bestellungen</a>
+      <a class="navbar-brand" href="{{url_for('abrechnung')}}">Abrechnung</a>
+      <a class="navbar-brand" href="{{url_for('produkte')}}">Produkte</a>
+      <a class="navbar-brand" href="{{url_for('statistik')}}">Statistik</a>
+    </nav>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>
